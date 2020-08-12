@@ -209,16 +209,20 @@ class BED:
                         if len(sline) == 3:
                             bed = BED3(sline[0], atoi(sline[1]), atoi(sline[2]));
                             self.bed_vals[sline[0]].append(bed);
-                        if len(sline) == 4:
+                        elif len(sline) == 4:
                             if atof(sline[3]) >= val_threshold:
                                 bed = BED3(sline[0], atoi(sline[1]),
                                            atoi(sline[2]));
                                 self.bed_vals[sline[0]].append(bed);
-                        if len(sline) == 6:
+                        elif len(sline) == 6:
                             if atof(sline[4]) >= val_threshold:
                                 bed = BED3(sline[0], atoi(sline[1]),
                                            atoi(sline[2]));
                                 self.bed_vals[sline[0]].append(bed);
+                        elif len(sline) >= 3:
+                            bed = BED3(sline[0], atoi(sline[1]), atoi(sline[2]));
+                            self.bed_vals[sline[0]].append(bed);
+
 
             
             elif re.match(bed_type, "BED_GRAPH"):
@@ -234,12 +238,12 @@ class BED:
                             sys.stderr.write("Can't make bed_graph with only \
                             3 elements")
                             raise bedError 
-                        if len(sline) == 4:
+                        elif len(sline) == 4:
                             if atof(sline[3]) >= val_threshold:
                                 bed = BED_GRAPH(sline[0], atoi(sline[1]), atoi(sline[2]),
                                            atof(sline[3]));
                                 self.bed_vals[sline[0]].append(bed);
-                        if len(sline) == 6:
+                        elif len(sline) == 6:
                             if atof(sline[4]) >= val_threshold:
                                 bed = BED_GRAPH(sline[0], atoi(sline[1]), atoi(sline[2]),
                                            atof(sline[4]));
@@ -256,15 +260,15 @@ class BED:
                         if len(sline) == 3:
                             sys.stderr.write("Need BED6 to make BE2")
                             raise bedError
-                        if len(sline) == 4:
+                        elif len(sline) == 4:
                             sys.stderr.write("Need BED6 to make BE2")
                             raise bedError
-                        if len(sline) == 6:
+                        elif len(sline) == 6:
                             if atof(sline[4]) >= val_threshold:
                                 if plus.match(sline[5]):
                                     bed = BED2(atoi(sline[1]), sline[5]);
-                                elif minus.match(sline[5]):
-                                    bed = BED2(atoi(sline[2]), sline[5]);
+                                elif minus.match(sline[5]): # The BED format is open ended, hence the real start is atoi(sline[2]) - 1
+                                    bed = BED2(atoi(sline[2]) - 1, sline[5]);
                                 self.bed_vals[sline[0]].append(bed);
 
             elif re.match(bed_type, "BED6"):
@@ -278,10 +282,10 @@ class BED:
                         if len(sline) == 3:
                             sys.stderr.write("Need BED6 to make BE6")
                             raise bedError
-                        if len(sline) == 4:
+                        elif len(sline) == 4:
                             sys.stderr.write("Need BED6 to make BE6")
                             raise bedError
-                        if len(sline) == 6:
+                        elif len(sline) == 6:
                             if atof(sline[4]) >= val_threshold:
                                 bed = BED6(sline[0], atoi(sline[1]), atoi(sline[2]),
                                            sline[3], atof(sline[4]), sline[5]);

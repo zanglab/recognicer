@@ -1,4 +1,19 @@
 #!/usr/bin/env python
+# Authors: Chongzhi Zang, Weiqun Peng
+#
+# Disclaimer
+# 
+# This software is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# Comments and/or additions are welcome (send e-mail to:
+# wpeng@gwu.edu).
+#
+# Version 1.1  6/9/2010
+
+
 import re, os, sys, shutil
 from math import *   
 from string import *
@@ -11,6 +26,7 @@ import UCSC
 import GenomeData;
 import Utility
 import SeparateByChrom
+import get_total_tag_counts
 
 plus = re.compile("\+");
 minus = re.compile("\-");
@@ -23,6 +39,15 @@ def tag_position(sline, fragment_size):
 	elif minus.match(sline[5]):
 		return atoi(sline[2]) - 1 - shift
 
+def countTagsInWindow(start, end, tag_starts):
+	# Require that the tag_starts are sorted!
+	assert( start<=end )
+	start_ind = bisect.bisect_left(tag_starts, start);
+	end_ind = bisect.bisect_right(tag_starts, end);
+	tags = end_ind - start_ind;
+	return tags;
+
+
 def find_readcount_on_regions(tag_position_list, region_start_list, region_end_list):
 	'''
 	The regions could overlap !!
@@ -32,12 +57,8 @@ def find_readcount_on_regions(tag_position_list, region_start_list, region_end_l
 	assert len(region_start_list) == len(region_end_list)
 	if (Utility.is_list_sorted(tag_position_list)==0):
 		tag_position_list.sort();
-	
 	for i in range(0, len(region_start_list)):
-		assert (region_start_list[i] <= region_end_list[i]);
-		s = bisect.bisect_left(tag_position_list, region_start_list[i])
-		e = bisect.bisect_right(tag_position_list, region_end_list[i])
-		tags = e-s;
+		tags = countTagsInWindow(region_start_list[i], region_end_list[i], tag_position_list);
 		region_readcount_list.append(tags);
 	return region_readcount_list
 
@@ -73,7 +94,7 @@ def main(argv):
 		print "This species is not recognized, exiting";
 		sys.exit(1);
 	
-	total = 0;
+	
 	
 	islands = BED.BED(opt.species, opt.islandfile, "BED3", 0);
 	if Utility.fileExists(opt.readfile):
@@ -82,6 +103,10 @@ def main(argv):
 		print opt.readfile, " not found";
 		sys.exit(1)
 	
+	total = 0; 
+	library_size = get_total_tag_counts.get_total_tag_counts(opt.readfile);
+	
+	scaling_factor = 1000000; 
 	out = open(opt.out_file, 'w');
 	for chrom in chroms:
 		if chrom in islands.keys():
@@ -97,7 +122,7 @@ def main(argv):
 				island_start_list.append(item.start)
 				island_end_list.append(item.end)
 
-			read_file = chrom + ".bed";
+			read_file = chrom + ".bed1";
 			f = open(read_file,'r')
 			for line in f:
 				if not re.match("#", line):
@@ -110,9 +135,11 @@ def main(argv):
 						total += 1;
 			f.close();
 							
+			
 			for index in xrange(len(island_list)):
 				item = island_list[index];
-				outline = item.chrom + "\t" + str(item.start) + "\t" + str(item.end) + "\t" + str(island_readcount_list[index]) +"\n";	
+				normalized_read_count = island_readcount_list[index]/float(library_size) * scaling_factor;
+				outline = item.chrom + "\t" + str(item.start) + "\t" + str(item.end) + "\t" + str(island_readcount_list[index]) +  "\t" + str(normalized_read_count) + "\n";	
 				out.write(outline);		
 							
 	SeparateByChrom.cleanup(chroms, '.bed1');

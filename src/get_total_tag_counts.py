@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2007 The George Washington University
+# Copyright (c) 2010 The George Washington University
 # Copyright (c) 2007 NHLBI, NIH
 # Authors: Weiqun Peng, Chongzhi Zang and Keji Zhao
 #
@@ -17,7 +17,9 @@
 # General Public License for more details.
 #
 # Comments and/or additions are welcome (send e-mail to:
-# schonesde@mail.nih.gov).
+# wpeng@gwu.edu).
+#
+# Version 1.1  6/9/2010
 
 import re, os, sys, shutil
 from math import *   

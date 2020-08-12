@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+# Authors: Dustin E Schones, Chongzhi Zang, Weiqun Peng and Keji Zhao
+# Disclaimer
+# 
+# Comments and/or additions are welcome (send e-mail to:
+# wpeng@gwu.edu).
+#
+# Version 1.1  6/9/2010
+
+
 import re, os, sys, shutil
 from math import *   
 from string import *
@@ -7,79 +16,20 @@ from optparse import OptionParser
 ## get BED module
 import BED
 import GenomeData
+import make_graph_file
+import SeparateByChrom
 
-
-"""
-For now, we'll use fragment sizes of 150 bp for histone modifications
-and 300 bp for enzymes
-
-and window sizes of 200 bp for histone modifications and 400 bp for
-enzymes
-"""
-
-
-Dir = os.getcwd();
-grep = "/bin/grep";
-cat = "/bin/cat";
-
-
-#SratDir = os.path.expandvars('$SRAT')
-SratDir ='/nv/vol190/zanglab/yw3t/CG9/Modules/'
-make_graph_file = os.path.join(SratDir, "make-graph-file.py");
-
-
-def separateByChrom(chroms, file):
-    for chrom in chroms:
-        match = chrom + "[[:space:]]";
-        tmpFile = chrom + ".bed";
-        try:
-            if os.system('%s %s %s > %s' %
-                         (grep, match, file, tmpFile)): raise
-        except: sys.stderr.write("grep failed\n");
-
-
-def makeGraphFile(chroms, window, fragment_size):
-    for chrom in chroms:
-        bed_file = chrom + ".bed";
-        graph_file = chrom + ".graph";
-        try:
-            if os.system('%s -f %s -c %s -w %s -i %s -o %s'%
-                         (make_graph_file, bed_file, chrom,
-                          window, fragment_size, graph_file)): raise
-        except: sys.stderr.write("make_graph_file failed\n")
-
-
-def combineAllGraphFiles(chroms, final_out):
-    """
-    Combine the seperately processed chromosomes, return the output file name
-    """
-    outfile = open(final_out,'w');
-    outfile.close();
-    
-    for chrom in chroms:
-        graph_file = chrom + ".graph";
-        try:
-            if os.system('%s %s >> %s' %
-                         (cat, graph_file, final_out)): raise
-        except: sys.stderr.write("cat failed\n")
-    return final_out
-		
-
-def cleanup(chroms):
-    for chrom in chroms:
-        bed_file = chrom + ".bed";
-        graph_file = chrom + ".graph";
-        try:
-            if os.remove('%s' %
-                         (bed_file)): raise
-        except: sys.stderr.write("clean up failed\n");
-        try:
-            if os.remove('%s' %
-                         (graph_file)): raise
-        except: sys.stderr.write("clean up failed\n");
-
-
-    
+def makeGraphFile(chroms, chrom_lengths, window, fragment_size):
+	for chrom in chroms:
+		if chrom in chrom_lengths.keys():
+			chrom_length = chrom_lengths[chrom];
+		else:
+			 print "Can not find the length of ", chrom;
+			 exit(1);
+		bed_file = chrom + ".bed";	
+		graph_file = chrom + ".graph";
+		make_graph_file.make_graph_file(bed_file, chrom, chrom_length, window, fragment_size, graph_file)		
+ 
 def main(argv):
     """
     Note the window_size and the fragment_size are both input as strings, as they are used in
@@ -91,9 +41,9 @@ def main(argv):
     parser.add_option("-b", "--bed_file", action="store", type="string",
                       dest="bedfile", help="bed file to make graph file of",
                       metavar="<file>")
-    parser.add_option("-w", "--window_size", action="store", type="string",
+    parser.add_option("-w", "--window_size", action="store", type="int",
                       dest="window_size", help="window size", metavar="<int>")
-    parser.add_option("-i", "--fragment_size", action="store", type="string",
+    parser.add_option("-i", "--fragment_size", action="store", type="int",
                       dest="fragment_size",
                       help="size of fragments after CHIP experiment",
                       metavar="<int>")
@@ -107,14 +57,13 @@ def main(argv):
 
     if opt.species in GenomeData.species_chroms.keys():
         chroms = GenomeData.species_chroms[opt.species];
-        separateByChrom(chroms, opt.bedfile);
-        makeGraphFile(chroms, opt.window_size, opt.fragment_size);
+	chrom_lengths = GenomeData.species_chrom_lengths[opt.species];
+        SeparateByChrom.separateByChrom(chroms, opt.bedfile, ".bed");
+	makeGraphFile(chroms, chrom_lengths, opt.window_size, opt.fragment_size);
         final_output_file = opt.outfile;
-        final_output_file = combineAllGraphFiles(chroms, final_output_file);
-        #in_filename = (opt.bedfile).split('/');
-        #in_filename = (in_filename[-1]).split('.');
-        #out_filename = in_filename[-2] + "_summary.graph";
-        cleanup(chroms);
+        final_output_file = SeparateByChrom.combineAllGraphFiles(chroms, ".graph", final_output_file);
+        SeparateByChrom.cleanup(chroms, ".bed");
+	SeparateByChrom.cleanup(chroms, ".graph");
     else:
         print opt.species + " is not in the species list ";
 	

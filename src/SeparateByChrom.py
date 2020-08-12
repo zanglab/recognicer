@@ -16,7 +16,11 @@
 # General Public License for more details.
 #
 # Comments and/or additions are welcome (send e-mail to:
-# schonesde@mail.nih.gov)
+# wpeng@gwu.edu).
+#
+# Version 1.1  6/9/2010
+
+
 import re, os, sys, shutil
 from math import *   
 from string import *
@@ -35,13 +39,16 @@ minus = re.compile("\-");
 
 
 def separateByChrom(chroms, file, extension):
-    for chrom in chroms:
-        match = chrom + "[[:space:]]";
-        tmpFile = chrom + extension;
-        try:
-            if os.system('%s %s %s > %s' %
-                         (grep, match, file, tmpFile)): raise
-        except: sys.stderr.write( str(chrom) + " reads do not exist in " + str(file) + "\n");
+	"""
+	It is ok if the chroms do not include all those existing in the file.
+	"""
+    	for chrom in chroms:
+        	match = chrom + "[[:space:]]";
+        	tmpFile = chrom + extension;
+        	try:
+            		if os.system('%s %s %s > %s' %
+                         	(grep, match, file, tmpFile)): raise
+        	except: sys.stderr.write( "Warning: " + str(chrom) + " reads do not exist in " + str(file) + "\n");
 
 
 def combineAllGraphFiles(chroms, extension, final_out):
