@@ -6,16 +6,23 @@ A coarse-graining based method for identifying multi-scale broad peaks from ChIP
 
 For details of the algorithm, please see
 
-"*RECOGNICER: A coarse-graining approach for identifying broad domains from ChIP- seq data.*" Chongzhi Zang, Yiren Wang, and Weiqun Peng.(2020)
-
-doi:
+"*RECOGNICER: A coarse-graining approach for identifying broad domains from ChIP- seq data.*" Chongzhi Zang, Yiren Wang, and Weiqun Peng.(2020) doi: available soon...
 
 This package is provided under the BSD-2-Clause lisense.
 
 
 ## 2. Installation
 
-Current supported genomes include: human hg38, hg19, hg18; mouse mm10, mm9, mm8; 
+RECOGNICER v1.0 is implemented in python2. 
+1. Prerequisites include `scipy` package. 
+
+2. To install RECOGNICER, download the source package and setup the configurations in the script `RECOGNICER.sh`: set the variable `SRC_DIR` to be the directory where the uncompressed package is stored, e.g.,
+`SRC_DIR=/home/packages/recognicer`
+
+3. Make sure environment variables so that python modules can be executed smoothly.
+
+4. Current supported genomes include: human hg38, hg19, hg18; mouse mm10, mm9, mm8; rat rn4; drosophila dm2, dm3; yeast sacCer1, pombe; and Arabidopsis tair8. For adding more customized species or genome versions, please see Additional notes below.
+
 
 ## 3. Running RECOGNICER
 
