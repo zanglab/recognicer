@@ -2,38 +2,57 @@
 
 if [ $# -lt 3 ]; then
     echo ""
-    echo 1>&2 Usage: $0 ["bed file"] ["control file"] ["p-value"] 
+    echo 1>&2 Usage: $0 ["chip bedfile"] ["control bedfile"] ["FDR"]
     echo ""
     exit 1
 fi
 
+SRC_DIR=.
+
+SAMPLEBED=$1
+CONTROL=$2
+FDR=$3
+
+SAMPLE=Sample
+SPECIES=hg18
+OUT_DIR=.
 WINDOW_SIZE=200
 FRAGMENT_SIZE=150
 STEP_SIZE=3
 STEP_SCORE=2
+GENOME_FRACTION=0.74
+CHIPTHRESHOLD=1
 
-SAMPLEBED=$1
-SAMPLE=${SAMPLEBED%.*}
+EX_DIR=$SRC_DIR/src
 
-CONTROL=$2
-PVALUE=$3
+echo ""
+echo "###################################################"
+echo "######            RECOGNICER v1.0            ######"
+echo "###################################################"
 
-SPECIES=hg18
+echo ""
+echo "Preprocessing the raw $SAMPLE file to remove redundant reads with threshold $CHIPTHRESHOLD..."
+echo "python $EX_DIR/remove_redundant_reads.py -s $SPECIES -b $SAMPLEBED -t $CHIPTHRESHOLD -o $OUT_DIR/$SAMPLE-nonredundant.bed"
+python $EX_DIR/remove_redundant_reads.py -s $SPECIES -b $SAMPLEBED -t $CHIPTHRESHOLD -o $OUT_DIR/$SAMPLE-nonredundant.bed
 
-SAMPLE_DIR=../CD4_H3K27me3
-CONTROL_DIR=../CD4_H3K27me3
-OUT_DIR=.
-EX_DIR=/cluster1/czang/coarse-graining-code/cg/Modules
- 
-echo "python $EX_DIR/run-make-graph-file-by-chrom.py -s $SPECIES -b $SAMPLE_DIR/$SAMPLEBED -w $WINDOW_SIZE -i $FRAGMENT_SIZE -o $OUT_DIR/$SAMPLE-W$WINDOW_SIZE.graph"
-python $EX_DIR/run-make-graph-file-by-chrom.py -s $SPECIES -b $SAMPLE_DIR/$SAMPLEBED -w $WINDOW_SIZE -i $FRAGMENT_SIZE -o $OUT_DIR/$SAMPLE-W$WINDOW_SIZE.graph
+echo ""
+echo "Generating bedgraph file..."
+echo "python $EX_DIR/run-make-graph-file-by-chrom.py -s $SPECIES -b $OUT_DIR/$SAMPLE-nonredundant.bed -w $WINDOW_SIZE -i $FRAGMENT_SIZE -o $OUT_DIR/$SAMPLE-W$WINDOW_SIZE.bedgraph"
+python $EX_DIR/run-make-graph-file-by-chrom.py -s $SPECIES -b $OUT_DIR/$SAMPLE-nonredundant.bed -w $WINDOW_SIZE -i $FRAGMENT_SIZE -o $OUT_DIR/$SAMPLE-W$WINDOW_SIZE.bedgraph
 
-echo "python $EX_DIR/coarsegraining-v9.py -s $SPECIES -b $OUT_DIR/$SAMPLE-W$WINDOW_SIZE.graph -w $WINDOW_SIZE -g $STEP_SIZE -e $STEP_SCORE -t $GENOME_FRACTION -f $OUT_DIR/$SAMPLE.cgisland"
-python $EX_DIR/coarsegraining-v9.py -s $SPECIES -b $OUT_DIR/$SAMPLE-W$WINDOW_SIZE.graph -w $WINDOW_SIZE -g $STEP_SIZE -e $STEP_SCORE -t $GENOME_FRACTION -f $OUT_DIR/$SAMPLE.cgisland
+echo ""
+echo "Coarse graining..."
+echo "python $EX_DIR/coarsegraining-v9.py -s $SPECIES -b $OUT_DIR/$SAMPLE-W$WINDOW_SIZE.bedgraph -w $WINDOW_SIZE -g $STEP_SIZE -e $STEP_SCORE -t $GENOME_FRACTION -f $OUT_DIR/$SAMPLE.cgisland"
+python $EX_DIR/coarsegraining-v9.py -s $SPECIES -b $OUT_DIR/$SAMPLE-W$WINDOW_SIZE.bedgraph -w $WINDOW_SIZE -g $STEP_SIZE -e $STEP_SCORE -t $GENOME_FRACTION -f $OUT_DIR/$SAMPLE.cgisland
 
-echo "python $EX_DIR/associate_tags_with_chip_and_control_w_fc_q_2013.py -s $SPECIES -f $FRAGMENT_SIZE -d $OUT_DIR/$SAMPLE.cgisland -b $CONTROL_DIR/$CONTROL -a  $SAMPLE_DIR/$SAMPLEBED -o $OUT_DIR/$SAMPLE.cgsummary3"
-python $EX_DIR/associate_tags_with_chip_and_control_w_fc_q_2013.py -s $SPECIES -f $FRAGMENT_SIZE -d $OUT_DIR/$SAMPLE.cgisland -b $CONTROL_DIR/$CONTROL -a  $SAMPLE_DIR/$SAMPLEBED -o $OUT_DIR/$SAMPLE.cgsummary
+echo ""
+echo "Calculating significance of candidate islands comparing to the control..."
+echo "python $EX_DIR/associate_tags_with_chip_and_control_w_fc_q_2013.py -s $SPECIES -f $FRAGMENT_SIZE -d $OUT_DIR/$SAMPLE.cgisland -b $CONTROL -a  $OUT_DIR/$SAMPLE-nonredundant.bed -o $OUT_DIR/$SAMPLE.cgsummary"
+python $EX_DIR/associate_tags_with_chip_and_control_w_fc_q_2013.py -s $SPECIES -f $FRAGMENT_SIZE -d $OUT_DIR/$SAMPLE.cgisland -b $CONTROL -a  $OUT_DIR/$SAMPLE-nonredundant.bed -o $OUT_DIR/$SAMPLE.cgsummary
 
-echo "python $EX_DIR/find_significant_islands.py -i $OUT_DIR/$SAMPLE.cgsummary3 -p $PVALUE -o $OUT_DIR/${SAMPLE}-P$PVALUE.bed"
-python $EX_DIR/find_significant_islands.py -i $OUT_DIR/$SAMPLE.cgsummary -p $PVALUE -o $OUT_DIR/${SAMPLE}-P$PVALUE.bed
+echo ""
+echo "Finding significant islands using the FDR criterion..."
+echo "python $EX_DIR/filter_islands_by_significance.py -i $OUT_DIR/$SAMPLE.cgsummary -p $FDR -c 7 -o $OUT_DIR/${SAMPLE}-fdr$FDR.bed"
+python $EX_DIR/filter_islands_by_significance.py -i $OUT_DIR/$SAMPLE.cgsummary -p $FDR -c 7 -o $OUT_DIR/${SAMPLE}-fdr$FDR.bed
 
+echo "Done!"
