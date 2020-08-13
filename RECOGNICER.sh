@@ -8,6 +8,7 @@ if [ $# -lt 3 ]; then
 fi
 
 SRC_DIR=.
+EX_DIR=$SRC_DIR/src
 
 SAMPLEBED=$1
 CONTROL=$2
@@ -23,7 +24,6 @@ STEP_SCORE=2
 GENOME_FRACTION=0.74
 CHIPTHRESHOLD=1
 
-EX_DIR=$SRC_DIR/src
 
 echo ""
 echo "###################################################"
@@ -52,7 +52,7 @@ python $EX_DIR/associate_tags_with_chip_and_control_w_fc_q_2013.py -s $SPECIES -
 
 echo ""
 echo "Finding significant islands using the FDR criterion..."
-echo "python $EX_DIR/filter_islands_by_significance.py -i $OUT_DIR/$SAMPLE.cgsummary -p $FDR -c 7 -o $OUT_DIR/${SAMPLE}-fdr$FDR.bed"
-python $EX_DIR/filter_islands_by_significance.py -i $OUT_DIR/$SAMPLE.cgsummary -p $FDR -c 7 -o $OUT_DIR/${SAMPLE}-fdr$FDR.bed
+echo "python $EX_DIR/filter_islands_by_FDR_broadPeak.py -i $OUT_DIR/$SAMPLE.cgsummary -p $FDR -c 7 -o $OUT_DIR/${SAMPLE}-fdr${FDR}_broadPeak.bed"
+python $EX_DIR/filter_islands_by_FDR_broadPeak.py -i $OUT_DIR/$SAMPLE.cgsummary -p $FDR -c 7 -o $OUT_DIR/${SAMPLE}-fdr${FDR}_broadPeak.bed
 
 echo "Done!"
