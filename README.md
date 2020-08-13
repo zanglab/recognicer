@@ -33,19 +33,24 @@ The input of RECOGNICER is two ChIP-seq mapped read data files, for the ChIP sig
 The 3 input arguments are ChIP data file, control data file, and FDR threshold. The whole process may take several hours. 
 
 Although not required, you can also tune the following parameters as you like:
-- `WINDOW_SIZE`: Resolution of the RECOGNICER result, in bp. default: 200 (mononucleosome+linker)
-- `FRAGMENT_SIZE`: ChIP DNA fragment size, used for determination of the shift size from the 5' start location of a sequence read towards the center of the DNA fragment represented by the read. default: 150 (mononucleosome)
-- `GENOME_FRACTION`: Effective mappable fraction of the whole genome, dependent on the read length. default: 0.74 for the human genome
-- `CHIPTHRESHOLD`: Number of copies of identical reads allowed in a dataset. default: 1
+- `WINDOW_SIZE`: Resolution of the RECOGNICER result, in bp. default: 200 (mononucleosome+linker).
+- `FRAGMENT_SIZE`: ChIP DNA fragment size, used for determination of the shift size from the 5' start location of a sequence read towards the center of the DNA fragment represented by the read. default: 150 (mononucleosome).
+- `GENOME_FRACTION`: Effective mappable fraction of the whole genome, dependent on the read length. default: 0.74 for the human genome.
+- `CHIPTHRESHOLD`: Number of copies of identical reads allowed in a dataset. default: 1.
 
 It is strongly NOT recommended to change other parameters.
 
-parallel 
+Caution: please do not run multiple instances of RECOGNICER scripts originated from the same directory in parallel. Each instance of RECOGNICER script generates temporary files with hard-coded names. If multiple instances of RECOGNICER scripts originated from the same directory are run in parallel, their temporary files would interfere with each other, resulting in absurd outcomes. If you need to run multiple instances of RECOGNICER simultaneously, please make sure to run them under separate directories to avoid interference.
+
 
 ## Output interpretation
 
+The output of RECOGNICER includes the following data files:
+- `$SAMPLE-nonredundant.bed`: Non-redundant reads filtered from the input ChIP dataset.
+- `$SAMPLE-W200.bedgraph`: Sample read pile-up track file, window size (200bp) resolution, in [bedGraph](https://genome.ucsc.edu/FAQ/FAQformat.html#format1.8) format, for genome browser visualization.
+- `$SAMPLE.cgsummary`: Summary of all candidate domains called from coarse-graining, with their complete information and statistical assessment, in the following format: chrom, start, end, ChIP read count, control read count, P-value, fold change, Q-value.
+- `$SAMPLE-fdr0.01_broadPeak.bed`: Final identified significant domains, in [ENCODE broadPeak](https://genome.ucsc.edu/FAQ/FAQformat.html#format13) format.
 
-[https://genome.ucsc.edu/FAQ/FAQformat.html#format13](https://genome.ucsc.edu/FAQ/FAQformat.html#format13)
 
 ## Additional notes
 
