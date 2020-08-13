@@ -2,19 +2,19 @@
 
 A coarse-graining based method for identifying multi-scale broad peaks from ChIP-seq data
 
-## 1. Introduction
+## Introduction
 
 For details of the algorithm, please see
 
 "*RECOGNICER: A coarse-graining approach for identifying broad domains from ChIP- seq data.*" Chongzhi Zang, Yiren Wang, and Weiqun Peng.(2020) doi: available soon...
 
-This package is provided under the BSD-2-Clause lisense.
+This package is provided under the [BSD-2-Clause](https://opensource.org/licenses/BSD-2-Clause) license. Please cite the above paper in your publication if you use this algorithm or package for analyzing the data in your work.
 
 
-## 2. Installation
+## Installation
 
 RECOGNICER v1.0 is implemented in python2. 
-1. Prerequisites include `scipy` package. 
+1. Prerequisites include the `scipy` package. 
 
 2. To install RECOGNICER, download the source package and setup the configurations in the script `RECOGNICER.sh`: set the variable `SRC_DIR` to be the directory where the uncompressed package is stored, e.g.,
 `SRC_DIR=/home/packages/recognicer`
@@ -24,18 +24,21 @@ RECOGNICER v1.0 is implemented in python2.
 4. Current supported genomes include: human hg38, hg19, hg18; mouse mm10, mm9, mm8; rat rn4; drosophila dm2, dm3; yeast sacCer1, pombe; and Arabidopsis tair8. For adding more customized species or genome versions, please see Additional notes below.
 
 
-## 3. Running RECOGNICER
+## Running RECOGNICER
 
-## 4. Output interpretation
+
+
+
+## Output interpretation
 
 
 [https://genome.ucsc.edu/FAQ/FAQformat.html#format13](https://genome.ucsc.edu/FAQ/FAQformat.html#format13)
 
-## 5. Additional notes
+## Additional notes
 
-### Adding species/genome
+### Adding customized species/genomes
 
-Information of supported genomes is stored in `GenomeData.py`. If the species or genome version is not listed there, you can add it by editing `GenomeData.py` as follows:
+Information of supported genomes is stored in `GenomeData.py`. If the species or genome version of your data is not included, you can add it by editing `GenomeData.py` as follows:
 1. Add a list of chromosomes as `${SPECIES}_chrom`
 2. Add a dictionary of the length of each chromosomes as `${SPECIES}_chrom_lengths`
 3. Modify the dictionary `species_chrom` by appending an element directing the genome name to the chrom list.
@@ -43,7 +46,7 @@ Information of supported genomes is stored in `GenomeData.py`. If the species or
 5. If you do not want chrM in your analysis, simply delete `chrM` from the entries in `GenomeData.py`.
 
 
-## 6. Contact
+## Contact
 
 Email: zang@virginia.edu
 
