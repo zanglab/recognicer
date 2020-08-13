@@ -40,7 +40,7 @@ Although not required, you can also tune the following parameters as you like:
 
 It is strongly NOT recommended to change other parameters.
 
-Caution: please do not run multiple instances of RECOGNICER scripts originated from the same directory in parallel. Each instance of RECOGNICER script generates temporary files with hard-coded names. If multiple instances of RECOGNICER scripts originated from the same directory are run in parallel, their temporary files would interfere with each other, resulting in absurd outcomes. If you need to run multiple instances of RECOGNICER simultaneously, please make sure to run them under separate directories to avoid interference.
+**Caution**: please do not run multiple instances of RECOGNICER scripts originated from the same directory in parallel. Each instance of RECOGNICER script generates temporary files with hard-coded names. If multiple instances of RECOGNICER scripts originated from the same directory are run in parallel, their temporary files would interfere with each other, resulting in absurd outcomes. If you need to run multiple instances of RECOGNICER simultaneously, please make sure to run them under separate directories to avoid interference.
 
 
 ## Output interpretation
