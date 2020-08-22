@@ -49,7 +49,7 @@ The output of RECOGNICER includes the following data files:
 - `$SAMPLE-nonredundant.bed`: Non-redundant reads filtered from the input ChIP dataset.
 - `$SAMPLE-W200.bedgraph`: Sample read pile-up track file, window size (200bp) resolution, in [bedGraph](https://genome.ucsc.edu/FAQ/FAQformat.html#format1.8) format, for genome browser visualization.
 - `$SAMPLE.cgsummary`: Summary of all candidate domains called from coarse-graining, with their complete information and statistical assessment, in the following format: chrom, start, end, ChIP read count, control read count, P-value, fold change, Q-value.
-- `$SAMPLE-fdr0.01_broadPeak.bed`: Final identified significant domains, in [ENCODE broadPeak](https://genome.ucsc.edu/FAQ/FAQformat.html#format13) format.
+- `$SAMPLE-fdr0.01_broadPeak.bed`: Final identified significant domains, in [ENCODE broadPeak](https://genome.ucsc.edu/FAQ/FAQformat.html#format13) format. The score in the 5th column is the fold change comparing ChIP and control read counts. The signalValue in the 7th column is the ChIP read count.
 
 
 ## Additional notes
