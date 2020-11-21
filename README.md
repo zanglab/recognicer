@@ -6,9 +6,11 @@ A coarse-graining based method for identifying multi-scale broad peaks from ChIP
 
 For details of the algorithm, please see
 
-"*RECOGNICER: A coarse-graining approach for identifying broad domains from ChIP-seq data.*" Chongzhi Zang, Yiren Wang, and Weiqun Peng. Quantitative Biology. [doi: 10.1007/s40484-020-0225-2](http://journal.hep.com.cn/qb/EN/10.1007/s40484-020-0225-2) (2020)
+"*RECOGNICER: A coarse-graining approach for identifying broad domains from ChIP-seq data.*" Chongzhi Zang, Yiren Wang, and Weiqun Peng. Quantitative Biology. [doi: 10.1007/s40484-020-0225-2](https://doi.org/10.1007/s40484-020-0225-2) (2020)
 
-This package is provided under the [BSD-2-Clause](https://opensource.org/licenses/BSD-2-Clause) license. Please cite the above paper in your publication if you use this algorithm or package for analyzing the data in your work.
+The full-text PDF can be found [here](http://journal.hep.com.cn/qb/EN/article/downloadArticleFile.do?attachType=PDF&id=28359).
+
+This package is provided under the [BSD-2-Clause](https://opensource.org/licenses/BSD-2-Clause) license. Please cite the above paper in your publication if you use this algorithm or package.
 
 
 ## Installation
